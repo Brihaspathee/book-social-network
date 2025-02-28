@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/book_social_network
-    username: postgres
-    password: cognizant
+    url: jdbc:postgresql://localhost:5432/booksocialnetdb
+    username: booksocialnetadmin
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -11,6 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_schema: booksocialnet
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   mail:

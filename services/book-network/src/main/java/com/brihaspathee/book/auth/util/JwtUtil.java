@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -79,6 +80,21 @@ public class JwtUtil {
     public String extractUsername(String token) {
         Function<Claims, String> claimsResolver = Claims::getSubject;
         return extractClaim(token, claimsResolver);
+    }
+
+    public List<String> extractAuthorities(String token) {
+        Claims claims = extractAllClaims(token);
+        List<?> rawList = claims.get("authorities", List.class);
+        return rawList.stream().map(Object::toString).toList();
+    }
+
+    public List<SimpleGrantedAuthority> extractGrantedAuthorities(String token) {
+        List<String> authorities = extractAuthorities(token);
+        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (String authority : authorities) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(authority));
+        }
+        return grantedAuthorities;
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
