@@ -3,6 +3,7 @@ package com.brihaspathee.book.controller;
 import com.brihaspathee.book.models.RegistrationRequest;
 import com.brihaspathee.book.service.interfaces.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,8 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) throws MessagingException {
+        authenticationService.register(request);
         return ResponseEntity.accepted().build();
     }
 }

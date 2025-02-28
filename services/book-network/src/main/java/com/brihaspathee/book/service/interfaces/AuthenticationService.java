@@ -1,6 +1,7 @@
 package com.brihaspathee.book.service.interfaces;
 
 import com.brihaspathee.book.models.RegistrationRequest;
+import jakarta.mail.MessagingException;
 
 /**
  * Created in Intellij IDEA
@@ -13,5 +14,5 @@ import com.brihaspathee.book.models.RegistrationRequest;
  */
 public interface AuthenticationService {
 
-    void register(RegistrationRequest registrationRequest);
+    void register(RegistrationRequest registrationRequest) throws MessagingException;
 }

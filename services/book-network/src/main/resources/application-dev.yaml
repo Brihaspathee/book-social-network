@@ -1,12 +1,12 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/book_social_network
-    username: bsnadmin
-    password: password
+    username: postgres
+    password: cognizant
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -28,8 +28,13 @@ spring:
         connectiontimeout: 5000
         timeout: 3000
         writetimeout: 5000
+server:
+  port: 8088
 application:
   security:
     jwt:
       secret-key: D834C9DE68DD15F51C98148CECB1E
       expiration: 8640000
+  mailing:
+    frontend:
+      activation-url: http://localhost:4200/activate-account

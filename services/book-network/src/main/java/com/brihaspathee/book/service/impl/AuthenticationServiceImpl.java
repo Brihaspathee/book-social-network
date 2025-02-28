@@ -6,10 +6,14 @@ import com.brihaspathee.book.auth.entity.User;
 import com.brihaspathee.book.auth.repository.RoleRepository;
 import com.brihaspathee.book.auth.repository.TokenRepository;
 import com.brihaspathee.book.auth.repository.UserRepository;
+import com.brihaspathee.book.constants.EmailTemplateName;
 import com.brihaspathee.book.models.RegistrationRequest;
 import com.brihaspathee.book.service.interfaces.AuthenticationService;
+import com.brihaspathee.book.service.interfaces.EmailService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,9 +42,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
 
     private final TokenRepository tokenRepository;
+    private final EmailService emailService;
+
+    @Value("${application.mailing.frontend.activation-url}")
+    private String activationUrl;
 
     @Override
-    public void register(RegistrationRequest registrationRequest) {
+    public void register(RegistrationRequest registrationRequest) throws MessagingException {
         Role userRole = roleRepository.findByRoleName("USER")
                 // todo better exception handling
                 .orElseThrow(() -> new IllegalStateException("Role User not found"));
@@ -53,13 +61,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .enabled(false)
                 .roles(List.of(userRole))
                 .build();
+        log.info("Registering user: {}", user);
         userRepository.save(user);
+        log.info("Registered user: {}", user);
         sendValidationEmail(user);
+        log.info("Email Sent");
     }
 
-    private void sendValidationEmail(User user) {
+    private void sendValidationEmail(User user) throws MessagingException {
         String newToken = generateAndSaveActivationToken(user);
-        // todo send email
+        log.info("New activation token: {}", newToken);
+        log.info("New activation email: {}", user.getEmail());
+        log.info("Email is to be sent");
+        emailService.sendEmail(
+                user.getEmail(),
+                user.getFullName(),
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                activationUrl,
+                newToken,
+                "Account Activation"
+        );
     }
 
     private String generateAndSaveActivationToken(User user) {
